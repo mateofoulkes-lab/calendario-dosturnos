@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendario de 2 turnos</title>
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const SPECIAL_2025 = [
+        { date: "2025-01-01", label: "Año Nuevo", type: "inamovible" },
+        { date: "2025-03-03", label: "Carnaval", type: "inamovible" },
+        { date: "2025-03-04", label: "Carnaval", type: "inamovible" },
+        { date: "2025-03-24", label: "Día Nacional de la Memoria por la Verdad y la Justicia", type: "inamovible" },
+        { date: "2025-04-02", label: "Día del Veterano y de los Caídos en la Guerra de Malvinas", type: "inamovible" },
+        { date: "2025-04-18", label: "Viernes Santo (Festividad cristiana)", type: "inamovible" },
+        { date: "2025-05-01", label: "Día del Trabajador", type: "inamovible" },
+        { date: "2025-05-25", label: "Día de la Revolución de Mayo", type: "inamovible" },
+        { date: "2025-06-20", label: "Paso a la Inmortalidad del Gral. Manuel Belgrano", type: "inamovible" },
+        { date: "2025-07-09", label: "Día de la Independencia", type: "inamovible" },
+        { date: "2025-12-08", label: "Inmaculada Concepción de María", type: "inamovible" },
+        { date: "2025-12-25", label: "Navidad", type: "inamovible" },
+        { date: "2025-06-16", label: "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6)", type: "trasladable" },
+        { date: "2025-08-17", label: "Paso a la Inmortalidad del Gral. José de San Martín", type: "trasladable" },
+        { date: "2025-10-10", label: "Día del Respeto a la Diversidad Cultural (12/10 → 10/10)", type: "trasladable" },
+        { date: "2025-11-24", label: "Día de la Soberanía Nacional (20/11 → 24/11)", type: "trasladable" },
+        { date: "2025-03-31", label: "Fiesta de la Ruptura del Ayuno (Id al-Fitr) (c)", type: "no-laborable" },
+        { date: "2025-04-13", label: "Pascua Judía – 1° día (b)", type: "no-laborable" },
+        { date: "2025-04-14", label: "Pascua Judía – 2° día (b)", type: "no-laborable" },
+        { date: "2025-04-17", label: "Jueves Santo (Festividad cristiana)", type: "no-laborable" },
+        { date: "2025-04-19", label: "Pascua Judía – 7° día (b)", type: "no-laborable" },
+        { date: "2025-04-20", label: "Pascua Judía – 8° día (b)", type: "no-laborable" },
+        { date: "2025-04-24", label: "Día de acción por la tolerancia y el respeto entre los pueblos (a)", type: "no-laborable" },
+        { date: "2025-06-06", label: "Fiesta del Sacrificio (c)", type: "no-laborable" },
+        { date: "2025-06-26", label: "Año Nuevo Islámico (c)", type: "no-laborable" },
+        { date: "2025-09-23", label: "Año Nuevo Judío – 1° día (b)", type: "no-laborable" },
+        { date: "2025-09-24", label: "Año Nuevo Judío – 2° día (b)", type: "no-laborable" },
+        { date: "2025-10-02", label: "Día del Perdón (b)", type: "no-laborable" },
+        { date: "2025-05-02", label: "Día no laborable con fines turísticos", type: "turistico" },
+        { date: "2025-08-15", label: "Día no laborable con fines turísticos", type: "turistico" },
+        { date: "2025-11-21", label: "Día no laborable con fines turísticos", type: "turistico" },
+      ];
+      const SPECIAL_DAYS = {
+        2025: SPECIAL_2025,
+        2026: SPECIAL_2025.map(({ date, label, type }) => ({ date: date.replace("2025", "2026"), label, type })),
+      };
+      const SPECIAL_STYLES = {
+        inamovible:   { bg: "bg-indigo-700",  border: "border-indigo-700",  text: "text-white"    },
+        trasladable:  { bg: "bg-emerald-500", border: "border-emerald-500", text: "text-white"    },
+        "no-laborable": { bg: "bg-gray-400",    border: "border-gray-400",    text: "text-gray-900" },
+        turistico:    { bg: "bg-purple-600",  border: "border-purple-600",  text: "text-white"    },
+      };
+      const ANCHOR_DATE = new Date(2024, 0, 1);
+      const COLORS = {
+        cellA: "bg-blue-200", cellB: "bg-orange-200", franco: "bg-purple-200/40",
+        outBg: "bg-white/10", outText: "text-gray-500",
+        borderA: "border-blue-500", borderB: "border-orange-500",
+        flashA: "bg-blue-500", flashB: "bg-orange-500",
+        cellBase: "relative border p-1.5 sm:p-2 text-center align-top hover:bg-gray-100/60 cursor-pointer select-none",
+      };
+      const LS_KEY = "turnosCalendarSettings.v1";
+      const DEFAULT_SETTINGS = { invertShifts:false, showInamovible:true, showTrasladable:true, showNoLaborable:true, showTuristico:true };
+      let SETTINGS = (()=>{ try{ const raw=localStorage.getItem(LS_KEY); return raw?{...DEFAULT_SETTINGS,...JSON.parse(raw)}:{...DEFAULT_SETTINGS}; }catch{return {...DEFAULT_SETTINGS};} })();
+      const saveSettings=()=>localStorage.setItem(LS_KEY, JSON.stringify(SETTINGS));
+      function applySettingsToUI(){
+        document.getElementById("opt-invert").checked = SETTINGS.invertShifts;
+        document.getElementById("opt-inamovible").checked = SETTINGS.showInamovible;
+        document.getElementById("opt-trasladable").checked = SETTINGS.showTrasladable;
+        document.getElementById("opt-nolaborable").checked = SETTINGS.showNoLaborable;
+        document.getElementById("opt-turistico").checked = SETTINGS.showTuristico;
+        document.querySelector('[data-legend="inamovible"]').classList.toggle("opacity-40", !SETTINGS.showInamovible);
+        document.querySelector('[data-legend="trasladable"]').classList.toggle("opacity-40", !SETTINGS.showTrasladable);
+        document.querySelector('[data-legend="no-laborable"]').classList.toggle("opacity-40", !SETTINGS.showNoLaborable);
+        document.querySelector('[data-legend="turistico"]').classList.toggle("opacity-40", !SETTINGS.showTuristico);
+      }
+      const today = new Date();
+      let currentMonth = today.getMonth(), currentYear = today.getFullYear();
+      const MS_DAY = 86400000;
+      const atMidnight = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      function startOfISOWeek(d){ const date=atMidnight(d); const day=(date.getDay()+6)%7; return new Date(date.getFullYear(), date.getMonth(), date.getDate()-day); }
+      const weeksBetween = (a,b)=> Math.floor((atMidnight(a)-atMidnight(b))/(7*MS_DAY));
+      function baseShiftForDate(d){ return (weeksBetween(startOfISOWeek(d), startOfISOWeek(ANCHOR_DATE)) % 2 === 0) ? "mañana":"tarde"; }
+      function effectiveShiftForDate(d){ const s=baseShiftForDate(d); return SETTINGS.invertShifts ? (s==="mañana"?"tarde":"mañana") : s; }
+      function dateToISO(d){ const m=(d.getMonth()+1).toString().padStart(2,"0"); const day=d.getDate().toString().padStart(2,"0"); return `${d.getFullYear()}-${m}-${day}`; }
+      function getSpecialForYear(year){ return SPECIAL_DAYS[year]||[]; }
+      function specialInfo(date){ const iso=dateToISO(date); const arr=getSpecialForYear(date.getFullYear()); return arr.find(x=>x.date===iso)||null; }
+      function getWeeksInMonth(year, month){
+        const first=new Date(year,month,1), last=new Date(year,month+1,0);
+        let cursor=startOfISOWeek(first); const endGuard=new Date(last.getFullYear(), last.getMonth(), last.getDate()+7);
+        const weeks=[];
+        while(cursor<=endGuard){
+          const days=[]; for(let i=0;i<7;i++) days.push(new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate()+i));
+          weeks.push({ days, shift: effectiveShiftForDate(cursor) });
+          cursor=new Date(cursor.getFullYear(),cursor.getMonth(),cursor.getDate()+7);
+          if(days[0]>last && days.some(d=>d.getMonth()!==month)) break;
+        }
+        return weeks.filter(w=>w.days.some(d=>d.getMonth()===month));
+      }
+      function renderMonthPicker(month, year){
+        const select=document.getElementById("month-select"); select.innerHTML="";
+        for(let i=0;i<12;i++){ const opt=document.createElement("option"); opt.value=i; opt.textContent=new Date(year,i).toLocaleString("es-ES",{month:"long"}); if(i===month) opt.selected=true; select.appendChild(opt); }
+      }
+      function renderCalendar(month, year){
+        const body=document.getElementById("calendar-body"); const label=document.getElementById("month-label");
+        label.textContent=new Date(year,month).toLocaleString("es-ES",{month:"long",year:"numeric"});
+        body.innerHTML=""; renderMonthPicker(month,year);
+        const weeks=getWeeksInMonth(year,month);
+        weeks.forEach(week=>{
+          const row=document.createElement("tr");
+          for(let i=0;i<7;i++){
+            const cell=document.createElement("td"); cell.className=COLORS.cellBase;
+            const day=week.days[i]; const inMonth=day.getMonth()===month; const isToday=atMidnight(day).getTime()===atMidnight(today).getTime();
+            const number=document.createElement("div"); number.className="text-[11px] sm:text-sm font-semibold inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 mx-auto rounded-full"; number.textContent=day.getDate();
+            if(inMonth){
+              const turno=week.shift; const isWeekend=(i===5||i===6); let painted=false;
+              if(turno==="mañana"){ if(i>=0 && i<=5){ cell.classList.add(COLORS.cellA); painted=true; } }
+              else { if(i>=0 && i<=4){ cell.classList.add(COLORS.cellB); painted=true; } }
+              if(!painted && isWeekend){ cell.classList.add(COLORS.franco); cell.title="Día franco"; }
+            } else {
+              cell.classList.add(COLORS.outBg); number.classList.add(COLORS.outText);
+            }
+            const special=specialInfo(day);
+            if(inMonth && special && (special.type==="inamovible"?SETTINGS.showInamovible: special.type==="trasladable"?SETTINGS.showTrasladable: special.type==="no-laborable"?SETTINGS.showNoLaborable: SETTINGS.showTuristico)){
+              const style=({inamovible:SPECIAL_STYLES.inamovible, trasladable:SPECIAL_STYLES.trasladable, "no-laborable":SPECIAL_STYLES["no-laborable"], turistico:SPECIAL_STYLES.turistico})[special.type];
+              number.classList.add(style.bg, style.border, style.text, "border-2");
+              if(cell.title) cell.title += ` · ${special.label}`; else cell.title = special.label;
+            }
+            if(isToday){
+              const turnoHoy=effectiveShiftForDate(day);
+              if(special && (special.type==="inamovible"?SETTINGS.showInamovible: special.type==="trasladable"?SETTINGS.showTrasladable: special.type==="no-laborable"?SETTINGS.showNoLaborable: SETTINGS.showTuristico)){
+                const st=({inamovible:SPECIAL_STYLES.inamovible, trasladable:SPECIAL_STYLES.trasladable, "no-laborable":SPECIAL_STYLES["no-laborable"], turistico:SPECIAL_STYLES.turistico})[special.type]||{};
+                if(st.border) number.classList.remove(st.border);
+              }
+              number.classList.add("border-2", turnoHoy==="mañana"?COLORS.borderA:COLORS.borderB);
+            }
+            cell.appendChild(number);
+            cell.addEventListener("click", ()=>showFlash(day));
+            row.appendChild(cell);
+          }
+          body.appendChild(row);
+        });
+        applySettingsToUI();
+      }
+      function showFlash(date){
+        const turno=effectiveShiftForDate(date); const special=specialInfo(date); const box=document.getElementById("message"); let extra="";
+        const i=(atMidnight(date).getDay()+6)%7; const turnoSemana=effectiveShiftForDate(startOfISOWeek(date));
+        let esFranco=false; if(turnoSemana==="mañana") esFranco=(i===6); else esFranco=(i===5||i===6);
+        if(esFranco) extra=" · Día franco"; if(special && (special.type==="inamovible"?SETTINGS.showInamovible: special.type==="trasladable"?SETTINGS.showTrasladable: special.type==="no-laborable"?SETTINGS.showNoLaborable: SETTINGS.showTuristico)) extra += (extra?" · ":" · ")+special.label;
+        box.textContent=`${date.toLocaleDateString("es-AR")} · Turno ${turno}${extra}`;
+        box.classList.remove("opacity-0", COLORS.flashA, COLORS.flashB);
+        box.classList.add(turno==="mañana"?COLORS.flashA:COLORS.flashB, "opacity-100");
+        clearTimeout(box._t); box._t=setTimeout(()=>{ box.classList.remove("opacity-100", COLORS.flashA, COLORS.flashB); box.classList.add("opacity-0"); },3000);
+      }
+      document.getElementById("prev-month").onclick=()=>{ if(--currentMonth<0){currentMonth=11;currentYear--;} renderCalendar(currentMonth,currentYear); };
+      document.getElementById("next-month").onclick=()=>{ if(++currentMonth>11){currentMonth=0;currentYear++;} renderCalendar(currentMonth,currentYear); };
+      document.getElementById("month-select").onchange=e=>{ currentMonth=parseInt(e.target.value,10); renderCalendar(currentMonth,currentYear); };
+      document.getElementById("go-today").onclick=()=>{ currentMonth=today.getMonth(); currentYear=today.getFullYear(); renderCalendar(currentMonth,currentYear); showFlash(today); };
+      const gearBtn=document.getElementById("open-menu"), menu=document.getElementById("menu");
+      gearBtn.addEventListener("click",(e)=>{ e.stopPropagation(); const open=menu.classList.toggle("hidden"); gearBtn.setAttribute("aria-expanded",(!open).toString()); });
+      document.addEventListener("click",(e)=>{ if(!menu.contains(e.target) && e.target!==gearBtn){ menu.classList.add("hidden"); gearBtn.setAttribute("aria-expanded","false"); } });
+      document.addEventListener("keydown",(e)=>{ if(e.key==="Escape"){ menu.classList.add("hidden"); gearBtn.setAttribute("aria-expanded","false"); } });
+      const onChangeSaveRerender=()=>{ localStorage.setItem(LS_KEY, JSON.stringify(SETTINGS)); renderCalendar(currentMonth,currentYear); };
+      document.getElementById("opt-invert").addEventListener("change",(e)=>{ SETTINGS.invertShifts=e.target.checked; onChangeSaveRerender(); });
+      document.getElementById("opt-inamovible").addEventListener("change",(e)=>{ SETTINGS.showInamovible=e.target.checked; onChangeSaveRerender(); });
+      document.getElementById("opt-trasladable").addEventListener("change",(e)=>{ SETTINGS.showTrasladable=e.target.checked; onChangeSaveRerender(); });
+      document.getElementById("opt-nolaborable").addEventListener("change",(e)=>{ SETTINGS.showNoLaborable=e.target.checked; onChangeSaveRerender(); });
+      document.getElementById("opt-turistico").addEventListener("change",(e)=>{ SETTINGS.showTuristico=e.target.checked; onChangeSaveRerender(); });
+      renderCalendar(currentMonth,currentYear);
+    });
+  </script>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-300 to-orange-300 p-3 sm:p-4">
+  <div class="shadow-2xl rounded-2xl p-3 sm:p-6 w-full max-w-3xl border border-white/50 backdrop-blur-md bg-transparent relative">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
+      <div class="flex items-center gap-2">
+        <button id="prev-month" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 rounded-full shadow-md hover:bg-gray-300">◀</button>
+        <button id="next-month" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 rounded-full shadow-md hover:bg-gray-300">▶</button>
+        <button id="go-today" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700">Ir a hoy</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="month-select" class="px-3 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md"></select>
+        <button id="open-menu" class="p-2 rounded-full hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" aria-haspopup="true" aria-expanded="false" title="Opciones">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.55-.9 3.317.866 2.417 2.417a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.9 1.55-.866 3.317-2.417 2.417a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.55.9-3.317-.866-2.417-2.417a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.9-1.55.866-3.317 2.417-2.417.934.542 2.147.174 2.573-1.066z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+
+          </svg>
+        </button>
+        <div id="menu" class="hidden absolute right-3 top-16 sm:top-20 z-20 w-64 rounded-xl bg-white/80 backdrop-blur-md shadow-lg border border-white/60 p-3 text-sm">
+          <p class="font-semibold mb-2">Opciones</p>
+          <label class="flex items-center gap-2 py-1"><input id="opt-invert" type="checkbox" class="accent-gray-700"><span>Invertir turnos mañana/tarde</span></label>
+          <div class="my-2 h-px bg-gray-300/60"></div>
+          <label class="flex items-center gap-2 py-1"><input id="opt-inamovible" type="checkbox" class="accent-indigo-700" checked><span>Mostrar feriados inamovibles</span></label>
+          <label class="flex items-center gap-2 py-1"><input id="opt-trasladable" type="checkbox" class="accent-emerald-600" checked><span>Mostrar feriados trasladables</span></label>
+          <label class="flex items-center gap-2 py-1"><input id="opt-nolaborable" type="checkbox" class="accent-gray-500" checked><span>Mostrar feriados no laborables</span></label>
+          <label class="flex items-center gap-2 py-1"><input id="opt-turistico" type="checkbox" class="accent-purple-600" checked><span>Mostrar feriados turísticos</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] sm:text-xs mb-2 sm:mb-3 opacity-90">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span data-legend="inamovible" class="inline-flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full bg-indigo-700"></span> Inamovibles</span>
+        <span data-legend="trasladable" class="inline-flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full bg-emerald-500"></span> Trasladables</span>
+        <span data-legend="no-laborable" class="inline-flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full bg-gray-400"></span> No laborables</span>
+        <span data-legend="turistico" class="inline-flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-full bg-purple-600"></span> Turísticos</span>
+      </div>
+      <div class="flex items-center gap-2 ml-auto">
+        <span class="px-2 py-0.5 rounded-md text-gray-800 bg-blue-200 border border-blue-400 text-[11px] sm:text-xs">Turno mañana</span>
+        <span class="px-2 py-0.5 rounded-md text-gray-800 bg-orange-200 border border-orange-400 text-[11px] sm:text-xs">Turno tarde</span>
+      </div>
+    </div>
+    <h2 id="month-label" class="text-center text-xl sm:text-2xl font-bold mb-2 sm:mb-4 capitalize"></h2>
+    <div class="overflow-x-auto rounded-lg border border-white/50">
+      <table class="w-full border-collapse text-gray-800">
+        <thead><tr class="bg-gray-100/80 text-[11px] sm:text-sm">
+          <th class="border p-1.5 sm:p-2">Lun</th><th class="border p-1.5 sm:p-2">Mar</th><th class="border p-1.5 sm:p-2">Mié</th><th class="border p-1.5 sm:p-2">Jue</th><th class="border p-1.5 sm:p-2">Vie</th><th class="border p-1.5 sm:p-2">Sáb</th><th class="border p-1.5 sm:p-2">Dom</th>
+        </tr></thead>
+        <tbody id="calendar-body"></tbody>
+      </table>
+    </div>
+    <div id="message" class="mt-3 sm:mt-4 text-center text-[11px] sm:text-sm text-white px-3 py-2 rounded-full transition-opacity duration-300 opacity-0 shadow-md"></div>
+  </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(console.error);
+      });
+    }
+  </script>
+</body>
+</html>
