@@ -223,12 +223,34 @@
     </div>
     <div id="message" class="mt-3 sm:mt-4 text-center text-[11px] sm:text-sm text-white px-3 py-2 rounded-full transition-opacity duration-300 opacity-0 shadow-md"></div>
   </div>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(console.error);
-      });
-    }
-  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+
+    // Recargar cuando un nuevo SW toma control
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      // Evitar loop de recargas
+      if (!window.__reloadedBySW__) {
+        window.__reloadedBySW__ = true;
+        window.location.reload();
+      }
+    });
+
+    // Mensaje del SW indicando activación
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'SW_ACTIVATED') {
+        // Si querés mostrar un toast en vez de recargar, hacelo acá
+        // (el controllerchange ya gatilla la recarga)
+      }
+    });
+
+    // (Opcional) forzar check de update cuando la pestaña vuelve a foco
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.getRegistration().then(reg => reg && reg.update());
+      }
+    });
+  }
+</script>
 </body>
 </html>
