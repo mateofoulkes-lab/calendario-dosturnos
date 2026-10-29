@@ -7,7 +7,12 @@ self.addEventListener("install", event => {
     const cache = await caches.open(CACHE);
     await cache.addAll(APP_SHELL);
     // Tailwind es el mismo que usa DosTurn; se guarda para abrir offline.
-    try { await cache.add(new Request(TAILWIND_CDN, { mode: "no-cors" })); } catch {}
+    try {
+      const cdnRequest = new Request(TAILWIND_CDN, { mode: "no-cors" });
+      const cdnResponse = await fetch(cdnRequest);
+      // cache.put admite respuestas opacas (el script CDN es cross-origin).
+      await cache.put(cdnRequest, cdnResponse);
+    } catch {}
     await self.skipWaiting();
   })());
 });

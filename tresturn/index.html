@@ -322,6 +322,7 @@ const SPECIAL_2026 = [
             const special = specialInfo(day);
             if (inMonth && special && isCategoryEnabled(special.type)) {
               const style = SPECIAL_STYLES[special.type] || SPECIAL_STYLES.inamovible;
+              number.classList.remove("text-white"); // Un feriado usa el color de texto de su propio círculo.
               number.classList.add(style.bg, style.border, style.text, "border-2");
               if (cell.title) cell.title += ` · ${special.label}`;
               else cell.title = special.label;
