@@ -1,44 +1,49 @@
-/* Service worker EXCLUSIVO de /tresturn/. No elimina cachés de DosTurn. */
-const VERSION = "tresturn-shell-v1";
-const CORE = ["./", "./index.html", "./styles.css", "./core.js", "./app.js", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png"];
+// Service worker exclusivo de TresTurn. No toca la caché de DosTurn.
+const CACHE = "tresturn-original-style-v3";
+const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png"];
+const TAILWIND_CDN = "https://cdn.tailwindcss.com";
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(VERSION).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(APP_SHELL);
+    // Tailwind es el mismo que usa DosTurn; se guarda para abrir offline.
+    try { await cache.add(new Request(TAILWIND_CDN, { mode: "no-cors" })); } catch {}
+    await self.skipWaiting();
+  })());
 });
 self.addEventListener("activate", event => {
   event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key.startsWith("tresturn-") && key !== VERSION).map(key => caches.delete(key)));
+    const names = await caches.keys();
+    await Promise.all(names.filter(name => name.startsWith("tresturn-") && name !== CACHE).map(name => caches.delete(name)));
     await self.clients.claim();
   })());
 });
 self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
   const request = event.request;
-  if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin || !url.pathname.startsWith(new URL(self.registration.scope).pathname)) return;
-  if (request.mode === "navigate") {
-    event.respondWith((async () => {
+  const ownScope = new URL(self.registration.scope);
+  if (url.origin !== ownScope.origin && url.origin !== new URL(TAILWIND_CDN).origin) return;
+  if (url.origin === ownScope.origin && !url.pathname.startsWith(ownScope.pathname)) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    const cached = await cache.match(request);
+    if (request.mode === "navigate") {
       try {
         const response = await fetch(request);
-        if (response.ok) {
-          const cache = await caches.open(VERSION);
-          await cache.put(request, response.clone());
-        }
+        if (response.ok) await cache.put(request, response.clone());
         return response;
       } catch {
-        return (await caches.match(request)) || (await caches.match("./index.html")) || Response.error();
+        return cached || await cache.match("./index.html") || Response.error();
       }
-    })());
-    return;
-  }
-  event.respondWith((async () => {
-    const cached = await caches.match(request);
-    if (cached) return cached;
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(VERSION);
-      await cache.put(request, response.clone());
     }
-    return response;
+    if (cached) return cached;
+    try {
+      const response = await fetch(request);
+      if (response.ok || response.type === "opaque") await cache.put(request, response.clone());
+      return response;
+    } catch {
+      return cached || Response.error();
+    }
   })());
 });

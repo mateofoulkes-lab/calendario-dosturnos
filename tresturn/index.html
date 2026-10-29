@@ -1,122 +1,563 @@
-<!doctype html>
-<html lang="es-AR">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101b32">
-  <meta name="description" content="Calendario rotativo de tres turnos: mañana, tarde y noche. Equipos A, B y C.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TresTurn · Calendario de 3 turnos</title>
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Calendario de tres turnos rotativos. Equipos A, B y C.">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="TresTurn">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
-  <link rel="stylesheet" href="./styles.css">
-  <title>TresTurn · Calendario de turnos</title>
-  <script defer src="./core.js"></script>
-  <script defer src="./app.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // =====================================================
+      // FERIADOS 2025 y copia 2026 (placeholder)
+      // =====================================================
+      const SPECIAL_2025 = [
+        // ——— INAMOVIBLES
+        { date: "2025-01-01", label: "Año Nuevo", type: "inamovible" },
+        { date: "2025-03-03", label: "Carnaval", type: "inamovible" },
+        { date: "2025-03-04", label: "Carnaval", type: "inamovible" },
+        { date: "2025-03-24", label: "Día Nacional de la Memoria por la Verdad y la Justicia", type: "inamovible" },
+        { date: "2025-04-02", label: "Día del Veterano y de los Caídos en la Guerra de Malvinas", type: "inamovible" },
+        { date: "2025-04-18", label: "Viernes Santo (Festividad cristiana)", type: "inamovible" },
+        { date: "2025-05-01", label: "Día del Trabajador", type: "inamovible" },
+        { date: "2025-05-25", label: "Día de la Revolución de Mayo", type: "inamovible" },
+        { date: "2025-06-20", label: "Paso a la Inmortalidad del Gral. Manuel Belgrano", type: "inamovible" },
+        { date: "2025-07-09", label: "Día de la Independencia", type: "inamovible" },
+        { date: "2025-12-08", label: "Inmaculada Concepción de María", type: "inamovible" },
+        { date: "2025-12-25", label: "Navidad", type: "inamovible" },
+
+        // ——— TRASLADABLES
+        { date: "2025-06-16", label: "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6)", type: "trasladable" },
+        { date: "2025-08-17", label: "Paso a la Inmortalidad del Gral. José de San Martín", type: "trasladable" },
+        { date: "2025-10-10", label: "Día del Respeto a la Diversidad Cultural (12/10 → 10/10)", type: "trasladable" },
+        { date: "2025-11-24", label: "Día de la Soberanía Nacional (20/11 → 24/11)", type: "trasladable" },
+
+        // ——— NO LABORABLES (religiosas/comunitarias)
+        { date: "2025-03-31", label: "Fiesta de la Ruptura del Ayuno (Id al-Fitr) (c)", type: "no-laborable" },
+        { date: "2025-04-13", label: "Pascua Judía – 1° día (b)", type: "no-laborable" },
+        { date: "2025-04-14", label: "Pascua Judía – 2° día (b)", type: "no-laborable" },
+        { date: "2025-04-17", label: "Jueves Santo (Festividad cristiana)", type: "no-laborable" },
+        { date: "2025-04-19", label: "Pascua Judía – 7° día (b)", type: "no-laborable" },
+        { date: "2025-04-20", label: "Pascua Judía – 8° día (b)", type: "no-laborable" },
+        { date: "2025-04-24", label: "Día de acción por la tolerancia y el respeto entre los pueblos (a)", type: "no-laborable" },
+        { date: "2025-06-06", label: "Fiesta del Sacrificio (c)", type: "no-laborable" },
+        { date: "2025-06-26", label: "Año Nuevo Islámico (c)", type: "no-laborable" },
+        { date: "2025-09-23", label: "Año Nuevo Judío – 1° día (b)", type: "no-laborable" },
+        { date: "2025-09-24", label: "Año Nuevo Judío – 2° día (b)", type: "no-laborable" },
+        { date: "2025-10-02", label: "Día del Perdón (b)", type: "no-laborable" },
+
+        // ——— TURÍSTICOS (puentes)
+        { date: "2025-05-02", label: "Día no laborable con fines turísticos", type: "turistico" },
+        { date: "2025-08-15", label: "Día no laborable con fines turísticos", type: "turistico" },
+        { date: "2025-11-21", label: "Día no laborable con fines turísticos", type: "turistico" },
+      ];
+const SPECIAL_2026 = [
+  // ——— INAMOVIBLES
+  { date: "2026-01-01", label: "Año Nuevo", type: "inamovible" },
+  { date: "2026-02-16", label: "Carnaval", type: "inamovible" },
+  { date: "2026-02-17", label: "Carnaval", type: "inamovible" },
+  { date: "2026-03-24", label: "Día Nacional de la Memoria por la Verdad y la Justicia", type: "inamovible" },
+  { date: "2026-04-02", label: "Día del Veterano y de los Caídos en la Guerra de Malvinas", type: "inamovible" },
+  { date: "2026-04-03", label: "Viernes Santo (Festividad cristiana)", type: "inamovible" },
+  { date: "2026-05-01", label: "Día del Trabajador", type: "inamovible" },
+  { date: "2026-05-25", label: "Día de la Revolución de Mayo", type: "inamovible" },
+  { date: "2026-06-20", label: "Paso a la Inmortalidad del Gral. Manuel Belgrano", type: "inamovible" },
+  { date: "2026-07-09", label: "Día de la Independencia", type: "inamovible" },
+  { date: "2026-12-08", label: "Inmaculada Concepción de María", type: "inamovible" },
+  { date: "2026-12-25", label: "Navidad", type: "inamovible" },
+
+  // ——— TRASLADABLES
+  { date: "2026-06-15", label: "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6 → 15/6)", type: "trasladable" },
+  { date: "2026-08-17", label: "Paso a la Inmortalidad del Gral. José de San Martín", type: "trasladable" },
+  { date: "2026-10-12", label: "Día del Respeto a la Diversidad Cultural", type: "trasladable" },
+  { date: "2026-11-23", label: "Día de la Soberanía Nacional (20/11 → 23/11)", type: "trasladable" },
+
+  // ——— NO LABORABLES (religiosas/comunitarias)
+  { date: "2026-04-02", label: "Pascua Judía – 1° día (b)", type: "no-laborable" },
+  { date: "2026-04-03", label: "Pascua Judía – 2° día (b)", type: "no-laborable" },
+  { date: "2026-04-08", label: "Pascua Judía – 7° día (b)", type: "no-laborable" },
+  { date: "2026-04-09", label: "Pascua Judía – 8° día (b)", type: "no-laborable" },
+  { date: "2026-05-22", label: "Shavuot – 1° día (b)", type: "no-laborable" },
+  { date: "2026-05-23", label: "Shavuot – 2° día (b)", type: "no-laborable" },
+  { date: "2026-09-12", label: "Año Nuevo Judío – 1° día (b)", type: "no-laborable" },
+  { date: "2026-09-13", label: "Año Nuevo Judío – 2° día (b)", type: "no-laborable" },
+  { date: "2026-09-02", label: "Día del Perdón (b)", type: "no-laborable" },
+  { date: "2026-09-26", label: "Sucot – 1° día (b)", type: "no-laborable" },
+  { date: "2026-09-27", label: "Sucot – 2° día (b)", type: "no-laborable" },
+  { date: "2026-10-02", label: "Simjat Torá – 1° día (b)", type: "no-laborable" },
+  { date: "2026-10-03", label: "Simjat Torá – 2° día (b)", type: "no-laborable" },
+  { date: "2026-10-04", label: "Simjat Torá – 3° día (b)", type: "no-laborable" },
+  { date: "2026-05-27", label: "Fiesta del Sacrificio (c)", type: "no-laborable" },
+  { date: "2026-06-17", label: "Año Nuevo Islámico (c)", type: "no-laborable" },
+
+  // ——— TURÍSTICOS (puentes)
+  { date: "2026-03-23", label: "Día no laborable con fines turísticos", type: "turistico" },
+  { date: "2026-07-10", label: "Día no laborable con fines turísticos", type: "turistico" },
+  { date: "2026-12-07", label: "Día no laborable con fines turísticos", type: "turistico" },
+];
+
+      const SPECIAL_DAYS = {
+        2025: SPECIAL_2025,
+        2026: SPECIAL_2026,
+        2027: SPECIAL_2026.map(({ date, label, type }) => ({ date: date.replace("2025", "2026"), label, type })),
+      };
+
+      // Estilos de círculo por categoría (relleno + borde del mismo color)
+      const SPECIAL_STYLES = {
+        inamovible:   { bg: "bg-indigo-700",  border: "border-indigo-700",  text: "text-white"    },
+        trasladable:  { bg: "bg-emerald-500", border: "border-emerald-500", text: "text-white"    },
+        "no-laborable": { bg: "bg-gray-400",    border: "border-gray-400",    text: "text-gray-900" },
+        turistico:    { bg: "bg-purple-600",  border: "border-purple-600",  text: "text-white"    },
+      };
+
+      // =====================================================
+      // TURNOS
+      // =====================================================
+      const ANCHOR_DATE = new Date(2026, 9, 26); // Semana A mañana, B tarde, C noche
+
+      const COLORS = {
+        cellA: "bg-blue-200",        // mañana
+        cellB: "bg-orange-200",      // tarde
+        cellC: "bg-blue-900",        // noche
+        franco: "bg-purple-200/40",
+        outBg: "bg-white/10",
+        outText: "text-gray-500",
+        borderA: "border-blue-500",
+        borderB: "border-orange-500",
+        borderC: "border-blue-300",
+        flashA: "bg-blue-500",
+        flashB: "bg-orange-500",
+        flashC: "bg-blue-900",
+        cellBase: "relative border p-1.5 sm:p-2 text-center align-top hover:bg-gray-100/60 cursor-pointer select-none",
+      };
+
+      // =====================================================
+      // SETTINGS (persistentes vía localStorage)
+      // =====================================================
+      const LS_KEY = "tresturnCalendarSettings.v2";
+      const DEFAULT_SETTINGS = {
+        selectedTeam: "A",
+        reverseRotation: false,
+        showInamovible: true,
+        showTrasladable: true,
+        showNoLaborable: true,
+        showTuristico: true,
+      };
+      let SETTINGS = loadSettings();
+
+      function loadSettings() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          const stored = raw ? JSON.parse(raw) : {};
+          return {
+            ...DEFAULT_SETTINGS,
+            ...stored,
+            selectedTeam: ["A", "B", "C"].includes(stored.selectedTeam) ? stored.selectedTeam : "A",
+            reverseRotation: stored.reverseRotation === true
+          };
+        } catch { return { ...DEFAULT_SETTINGS }; }
+      }
+      function saveSettings() {
+        localStorage.setItem(LS_KEY, JSON.stringify(SETTINGS));
+      }
+
+      function applySettingsToUI() {
+        // checkboxes
+        document.getElementById("opt-reverse").checked = SETTINGS.reverseRotation;
+        document.getElementById("team-select").value = SETTINGS.selectedTeam;
+        document.getElementById("opt-inamovible").checked = SETTINGS.showInamovible;
+        document.getElementById("opt-trasladable").checked = SETTINGS.showTrasladable;
+        document.getElementById("opt-nolaborable").checked = SETTINGS.showNoLaborable;
+        document.getElementById("opt-turistico").checked = SETTINGS.showTuristico;
+
+        // leyenda (atenúa cuando está oculto)
+        document.querySelector('[data-legend="inamovible"]').classList.toggle("opacity-40", !SETTINGS.showInamovible);
+        document.querySelector('[data-legend="trasladable"]').classList.toggle("opacity-40", !SETTINGS.showTrasladable);
+        document.querySelector('[data-legend="no-laborable"]').classList.toggle("opacity-40", !SETTINGS.showNoLaborable);
+        document.querySelector('[data-legend="turistico"]').classList.toggle("opacity-40", !SETTINGS.showTuristico);
+      }
+
+      function isCategoryEnabled(type) {
+        switch (type) {
+          case "inamovible":   return SETTINGS.showInamovible;
+          case "trasladable":  return SETTINGS.showTrasladable;
+          case "no-laborable": return SETTINGS.showNoLaborable;
+          case "turistico":    return SETTINGS.showTuristico;
+          default: return true;
+        }
+      }
+
+      // =====================================================
+      // FECHAS helpers
+      // =====================================================
+      const today = new Date();
+      let currentMonth = today.getMonth();
+      let currentYear = today.getFullYear();
+      const MS_DAY = 24 * 60 * 60 * 1000;
+
+      const atMidnight = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      function startOfISOWeek(d) {
+        const date = atMidnight(d);
+        const day = (date.getDay() + 6) % 7; // lunes=0
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate() - day);
+      }
+      // Fechas civiles en UTC para evitar el desfasaje del horario de verano.
+      const utcDay = d => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / MS_DAY;
+      const weeksBetween = (a,b) => Math.round((utcDay(a) - utcDay(b)) / 7);
+
+      // El equipo seleccionado tiene un único turno por semana.
+      // Semana de referencia (26/10/2026): A mañana, B tarde, C noche.
+      // Por defecto: mañana → tarde → noche → mañana.
+      function effectiveShiftForDate(d) {
+        const shifts = ["mañana", "tarde", "noche"];
+        const teamOffset = { A: 0, B: 1, C: 2 }[SETTINGS.selectedTeam] ?? 0;
+        const weeks = weeksBetween(startOfISOWeek(d), startOfISOWeek(ANCHOR_DATE));
+        const direction = SETTINGS.reverseRotation ? -1 : 1;
+        const shiftIndex = ((teamOffset + weeks * direction) % 3 + 3) % 3;
+        return shifts[shiftIndex];
+      }
+
+      function dateToISO(d) {
+        const m = (d.getMonth()+1).toString().padStart(2,"0");
+        const day = d.getDate().toString().padStart(2,"0");
+        return `${d.getFullYear()}-${m}-${day}`;
+      }
+      function getSpecialForYear(year) { return SPECIAL_DAYS[year] || []; }
+      function specialInfo(date) {
+        const iso = dateToISO(date);
+        const arr = getSpecialForYear(date.getFullYear());
+        return arr.find(x => x.date === iso) || null;
+      }
+
+      // =====================================================
+      // Semanas del mes
+      // =====================================================
+      function getWeeksInMonth(year, month) {
+        const first = new Date(year, month, 1);
+        const last = new Date(year, month + 1, 0);
+        let cursor = startOfISOWeek(first);
+        const endGuard = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 7);
+        const weeks = [];
+        while (cursor <= endGuard) {
+          const days = [];
+          for (let i = 0; i < 7; i++) days.push(new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + i));
+          weeks.push({ days, shift: effectiveShiftForDate(cursor) });
+          cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + 7);
+          if (days[0] > last && days.some(d => d.getMonth() !== month)) break;
+        }
+        return weeks.filter(w => w.days.some(d => d.getMonth() === month));
+      }
+
+      // =====================================================
+      // Render
+      // =====================================================
+      function renderMonthPicker(month, year) {
+        const select = document.getElementById("month-select");
+        select.innerHTML = "";
+        for (let i = 0; i < 12; i++) {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = new Date(year, i).toLocaleString("es-ES", { month: "long" });
+          if (i === month) opt.selected = true;
+          select.appendChild(opt);
+        }
+      }
+
+      function renderCalendar(month, year) {
+        const body = document.getElementById("calendar-body");
+        const label = document.getElementById("month-label");
+        label.textContent = new Date(year, month).toLocaleString("es-ES", { month: "long", year: "numeric" });
+        body.innerHTML = "";
+        renderMonthPicker(month, year);
+
+        const weeks = getWeeksInMonth(year, month);
+        weeks.forEach(week => {
+          const row = document.createElement("tr");
+
+          for (let i = 0; i < 7; i++) {
+            const cell = document.createElement("td");
+            cell.className = COLORS.cellBase;
+
+            const day = week.days[i];
+            const inMonth = day.getMonth() === month;
+            const isToday = atMidnight(day).getTime() === atMidnight(today).getTime();
+
+            // número (siempre mostramos número)
+            const number = document.createElement("div");
+            number.className = "text-[11px] sm:text-sm font-semibold inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 mx-auto rounded-full";
+            number.textContent = day.getDate();
+
+            if (inMonth) {
+              const turno = week.shift; // "mañana" | "tarde" | "noche"
+              const isWeekend = (i === 5 || i === 6);
+              let painted = false;
+
+              // La noche se marca solo en su fecha de ingreso (22:00).
+              if (turno === "mañana") {
+                if (i <= 5) { cell.classList.add(COLORS.cellA); painted = true; }
+              } else if (turno === "tarde") {
+                if (i <= 4) { cell.classList.add(COLORS.cellB); painted = true; }
+              } else {
+                if (i <= 4) { cell.classList.add(COLORS.cellC); number.classList.add("text-white"); painted = true; }
+              }
+
+              // Fin de semana fuera de alcance del turno → "Día franco"
+              if (!painted && isWeekend) {
+                cell.classList.add(COLORS.franco);
+                cell.title = "Día franco";
+              }
+            } else {
+              // Fuera de mes
+              cell.classList.add(COLORS.outBg);
+              number.classList.add(COLORS.outText);
+            }
+
+            // Feriados/no laborables → círculo relleno + borde propio + tooltip (según filtros)
+            const special = specialInfo(day);
+            if (inMonth && special && isCategoryEnabled(special.type)) {
+              const style = SPECIAL_STYLES[special.type] || SPECIAL_STYLES.inamovible;
+              number.classList.add(style.bg, style.border, style.text, "border-2");
+              if (cell.title) cell.title += ` · ${special.label}`;
+              else cell.title = special.label;
+            }
+
+            // “Hoy” → borde del turno; si además es especial, mantiene el relleno y cambia el borde al del turno
+            if (isToday) {
+              const turnoHoy = effectiveShiftForDate(day);
+              if (special && isCategoryEnabled(special.type)) {
+                const st = SPECIAL_STYLES[special.type] || {};
+                if (st.border) number.classList.remove(st.border);
+              }
+              number.classList.add("border-2", turnoHoy === "mañana" ? COLORS.borderA : turnoHoy === "tarde" ? COLORS.borderB : COLORS.borderC);
+            }
+
+            cell.appendChild(number);
+            cell.addEventListener("click", () => showFlash(day));
+            row.appendChild(cell);
+          }
+          body.appendChild(row);
+        });
+
+        // actualizar leyenda según settings
+        applySettingsToUI();
+      }
+
+      function showFlash(date) {
+        const turno = effectiveShiftForDate(date);
+        const special = specialInfo(date);
+        const box = document.getElementById("message");
+        let extra = "";
+
+        // “Día franco” si es fin de semana fuera del alcance del turno
+        const i = (atMidnight(date).getDay() + 6) % 7; // 0..6 (lun..dom)
+        const turnoSemana = effectiveShiftForDate(startOfISOWeek(date));
+        let esFranco = false;
+        if (turnoSemana === "mañana") esFranco = (i === 6);
+        else esFranco = (i === 5 || i === 6);
+
+        if (esFranco) extra = " · Día franco";
+        if (special && isCategoryEnabled(special.type)) extra += (extra ? " · " : " · ") + special.label;
+
+        box.textContent = `${date.toLocaleDateString("es-AR")} · Turno ${turno}${extra}`;
+        box.classList.remove("opacity-0", COLORS.flashA, COLORS.flashB, COLORS.flashC);
+        box.classList.add(turno === "mañana" ? COLORS.flashA : turno === "tarde" ? COLORS.flashB : COLORS.flashC, "opacity-100");
+        clearTimeout(box._t);
+        box._t = setTimeout(() => {
+          box.classList.remove("opacity-100", COLORS.flashA, COLORS.flashB, COLORS.flashC);
+          box.classList.add("opacity-0");
+        }, 3000);
+      }
+
+      // =====================================================
+      // Controles + Menú de opciones (FIX: toggle 'hidden')
+      // =====================================================
+      document.getElementById("prev-month").onclick = () => {
+        if (--currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar(currentMonth, currentYear);
+      };
+      document.getElementById("next-month").onclick = () => {
+        if (++currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar(currentMonth, currentYear);
+      };
+      document.getElementById("month-select").onchange = e => {
+        currentMonth = parseInt(e.target.value, 10);
+        renderCalendar(currentMonth, currentYear);
+      };
+      document.getElementById("go-today").onclick = () => {
+        currentMonth = today.getMonth();
+        currentYear = today.getFullYear();
+        renderCalendar(currentMonth, currentYear);
+        showFlash(today);
+      };
+
+      const gearBtn = document.getElementById("open-menu");
+      const menu = document.getElementById("menu");
+      gearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = menu.classList.toggle("hidden"); // toggle devuelve si quedó oculto
+        gearBtn.setAttribute("aria-expanded", (!open).toString());
+      });
+      document.addEventListener("click", (e) => {
+        if (!menu.contains(e.target) && e.target !== gearBtn) {
+          menu.classList.add("hidden");
+          gearBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          menu.classList.add("hidden");
+          gearBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+
+      // Eventos de checkboxes
+      const onChangeSaveRerender = () => { saveSettings(); renderCalendar(currentMonth, currentYear); };
+
+      document.getElementById("team-select").addEventListener("change", (e) => {
+        SETTINGS.selectedTeam = ["A", "B", "C"].includes(e.target.value) ? e.target.value : "A";
+        onChangeSaveRerender();
+      });
+      document.getElementById("opt-reverse").addEventListener("change", (e) => {
+        SETTINGS.reverseRotation = e.target.checked; onChangeSaveRerender();
+      });
+      document.getElementById("opt-inamovible").addEventListener("change", (e) => {
+        SETTINGS.showInamovible = e.target.checked; onChangeSaveRerender();
+      });
+      document.getElementById("opt-trasladable").addEventListener("change", (e) => {
+        SETTINGS.showTrasladable = e.target.checked; onChangeSaveRerender();
+      });
+      document.getElementById("opt-nolaborable").addEventListener("change", (e) => {
+        SETTINGS.showNoLaborable = e.target.checked; onChangeSaveRerender();
+      });
+      document.getElementById("opt-turistico").addEventListener("change", (e) => {
+        SETTINGS.showTuristico = e.target.checked; onChangeSaveRerender();
+      });
+
+      // Init
+      renderCalendar(currentMonth, currentYear);
+    });
+  </script>
 </head>
-<body>
-  <div class="app">
-    <header class="topbar">
-      <a class="brand" href="./" aria-label="TresTurn, inicio">
-        <span class="brand-symbol"><i></i><i></i><i></i></span>
-        <span>Tres<span class="brand-light">Turn</span></span>
-      </a>
-      <div class="top-actions">
-        <a class="sibling-link" href="../">DosTurn <span aria-hidden="true">↗</span></a>
-        <button class="install-button" id="installBtn" type="button" title="Instalar como aplicación">＋ Instalar</button>
+<body class="flex flex-col items-center justify-start min-h-screen bg-gradient-to-r from-blue-300 to-orange-300 p-3 sm:p-4">
+  <div class="shadow-2xl rounded-2xl p-3 sm:p-6 w-full max-w-3xl border border-white/50 backdrop-blur-md bg-transparent relative">
+    <!-- Controles -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 sm:mb-4">
+      <div class="flex items-center gap-2">
+        <button id="prev-month" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 rounded-full shadow-md hover:bg-gray-300">◀</button>
+        <button id="next-month" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 rounded-full shadow-md hover:bg-gray-300">▶</button>
+        <button id="go-today" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700">Ir a hoy</button>
       </div>
-    </header>
 
-    <main>
-      <section class="hero">
-        <div>
-          <span class="eyebrow"><span class="live-dot"></span> Calendario rotativo · A / B / C</span>
-          <h1>Los tres turnos,<br><em>en un solo lugar.</em></h1>
-          <p>Consultá qué equipo trabaja de mañana, tarde o noche. También funciona sin conexión.</p>
-        </div>
-        <div class="hero-mark" aria-hidden="true"><span>A</span><span>B</span><span>C</span></div>
-      </section>
+      <div class="flex items-center gap-2">
+        <select id="month-select" class="px-3 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md"></select>
+        <label for="team-select" class="sr-only">Mi equipo</label>
+        <select id="team-select" aria-label="Mi equipo" class="px-3 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md bg-white">
+          <option value="A">Turno A</option>
+          <option value="B">Turno B</option>
+          <option value="C">Turno C</option>
+        </select>
 
-      <section class="section-block" aria-labelledby="weekTitle">
-        <div class="section-heading">
-          <div>
-            <span class="section-kicker">ROTACIÓN ACTUAL</span>
-            <h2 id="weekTitle">Esta semana</h2>
-            <p id="weekRange" class="muted"></p>
-          </div>
-          <button type="button" id="todayTop" class="today-button">Ir a hoy</button>
-        </div>
-        <div class="shift-overview" id="shiftOverview" aria-live="polite"></div>
-      </section>
+        <!-- Botón engranaje -->
+        <button id="open-menu" class="p-2 rounded-full hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50" aria-haspopup="true" aria-expanded="false" title="Opciones">
+          <!-- ícono engranaje -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.55-.9 3.317.866 2.417 2.417a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.9 1.55-.866 3.317-2.417 2.417a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.55.9-3.317-.866-2.417-2.417a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.9-1.55.866-3.317 2.417-2.417.934.542 2.147.174 2.573-1.066z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
 
-      <section class="section-block calendar-section" aria-labelledby="calendarTitle">
-        <div class="calendar-toolbar">
-          <div>
-            <span class="section-kicker">PLANIFICÁ TUS DÍAS</span>
-            <h2 id="calendarTitle">Calendario</h2>
-          </div>
-          <div class="calendar-actions">
-            <label class="filter-group" for="teamFilter"><span>Resaltar</span>
-              <select id="teamFilter">
-                <option value="all">Todos</option>
-                <option value="A">Equipo A</option>
-                <option value="B">Equipo B</option>
-                <option value="C">Equipo C</option>
-              </select>
-            </label>
-            <button type="button" id="prevMonth" class="round-button" aria-label="Mes anterior">‹</button>
-            <button type="button" id="nextMonth" class="round-button" aria-label="Mes siguiente">›</button>
-          </div>
+        <!-- Popover menú -->
+        <div id="menu" class="hidden absolute right-3 top-16 sm:top-20 z-20 w-64 rounded-xl bg-white/80 backdrop-blur-md shadow-lg border border-white/60 p-3 text-sm">
+          <p class="font-semibold mb-2">Opciones</p>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-reverse" type="checkbox" class="accent-gray-700">
+            <span>Invertir rotación de los tres turnos</span>
+          </label>
+          <div class="my-2 h-px bg-gray-300/60"></div>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-inamovible" type="checkbox" class="accent-indigo-700" checked>
+            <span>Mostrar feriados inamovibles</span>
+          </label>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-trasladable" type="checkbox" class="accent-emerald-600" checked>
+            <span>Mostrar feriados trasladables</span>
+          </label>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-nolaborable" type="checkbox" class="accent-gray-500" checked>
+            <span>Mostrar feriados no laborables</span>
+          </label>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-turistico" type="checkbox" class="accent-purple-600" checked>
+            <span>Mostrar feriados turísticos</span>
+          </label>
         </div>
+      </div>
+    </div>
 
-        <div class="calendar-card">
-          <div class="month-row">
-            <h3 id="monthTitle" aria-live="polite"></h3>
-            <button class="text-button" id="todayMonth" type="button">Hoy</button>
-          </div>
-          <div class="week-head" aria-hidden="true">
-            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
-          </div>
-          <div class="calendar-grid" id="calendarGrid" aria-label="Días y turnos del mes"></div>
-          <div class="legend" aria-label="Referencias">
-            <span><i class="legend-dot morning"></i>Mañana · 06–14</span>
-            <span><i class="legend-dot afternoon"></i>Tarde · 14–22</span>
-            <span><i class="legend-dot night"></i>Noche · 22–06</span>
-            <span><i class="legend-dot endnight"></i>Salida de noche</span>
-          </div>
-        </div>
-      </section>
-
-      <details class="settings" id="settingsPanel">
-        <summary><span class="settings-icon" aria-hidden="true">⚙</span><span><strong>Configuración de la rotación</strong><small>Semana de referencia y sentido del cambio</small></span><span class="chevron">⌄</span></summary>
-        <div class="settings-body">
-          <p>En la semana de referencia, el equipo <strong>A está de mañana</strong>, el <strong>B de tarde</strong> y el <strong>C de noche</strong>. La rotación cambia cada lunes.</p>
-          <div class="settings-fields">
-            <label>Semana de referencia
-              <input id="anchorDate" type="date" value="2026-10-26">
-            </label>
-            <label>Rotación semanal
-              <select id="rotationDirection">
-                <option value="1">Mañana → Tarde → Noche</option>
-                <option value="-1">Mañana → Noche → Tarde</option>
-              </select>
-            </label>
-          </div>
-          <p class="hint">Elegí cualquier fecha de la semana que conocés. Los cambios se guardan solamente en este dispositivo.</p>
-          <button id="resetSettings" type="button" class="reset-button">Restaurar configuración inicial</button>
-        </div>
-      </details>
-      <footer>Hecho para consultas rápidas · Turnos de inicio de lunes a viernes, y mañana también los sábados.</footer>
-    </main>
+    <!-- Leyenda compacta -->
+<!-- Agregar referencias de turno mañana/tarde a la derecha -->
+<div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] sm:text-xs mb-2 sm:mb-3 opacity-90">
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+    <span data-legend="inamovible" class="inline-flex items-center gap-1">
+      <span class="inline-block w-3 h-3 rounded-full bg-indigo-700"></span> Inamovibles
+    </span>
+    <span data-legend="trasladable" class="inline-flex items-center gap-1">
+      <span class="inline-block w-3 h-3 rounded-full bg-emerald-500"></span> Trasladables
+    </span>
+    <span data-legend="no-laborable" class="inline-flex items-center gap-1">
+      <span class="inline-block w-3 h-3 rounded-full bg-gray-400"></span> No laborables
+    </span>
+    <span data-legend="turistico" class="inline-flex items-center gap-1">
+      <span class="inline-block w-3 h-3 rounded-full bg-purple-600"></span> Turísticos
+    </span>
   </div>
-  <dialog id="dayDialog" aria-labelledby="dialogDate">
-    <div class="dialog-header"><div><span class="section-kicker">DETALLE DEL DÍA</span><h2 id="dialogDate"></h2></div><button class="dialog-close" id="closeDialog" aria-label="Cerrar" type="button">×</button></div>
-    <div id="dialogBody"></div>
-    <button class="dialog-bottom" type="button" id="closeDialogBottom">Cerrar</button>
-  </dialog>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Referencias turno mañana/tarde alineadas a la derecha -->
+  <div class="flex items-center gap-2 ml-auto">
+    <span class="px-2 py-0.5 rounded-md text-gray-800 bg-blue-200 border border-blue-400 text-[11px] sm:text-xs">Turno mañana</span>
+    <span class="px-2 py-0.5 rounded-md text-gray-800 bg-orange-200 border border-orange-400 text-[11px] sm:text-xs">Turno tarde</span>
+    <span class="px-2 py-0.5 rounded-md text-white bg-blue-900 border border-blue-950 text-[11px] sm:text-xs">Turno noche</span>
+  </div>
+</div>
+
+
+    <!-- Título mes -->
+    <h2 id="month-label" class="text-center text-xl sm:text-2xl font-bold mb-2 sm:mb-4 capitalize"></h2>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto rounded-lg border border-white/50">
+      <table class="w-full border-collapse text-gray-800">
+        <thead>
+          <tr class="bg-gray-100/80 text-[11px] sm:text-sm">
+            <th class="border p-1.5 sm:p-2">Lun</th>
+            <th class="border p-1.5 sm:p-2">Mar</th>
+            <th class="border p-1.5 sm:p-2">Mié</th>
+            <th class="border p-1.5 sm:p-2">Jue</th>
+            <th class="border p-1.5 sm:p-2">Vie</th>
+            <th class="border p-1.5 sm:p-2">Sáb</th>
+            <th class="border p-1.5 sm:p-2">Dom</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Mensaje emergente -->
+    <div id="message" class="mt-3 sm:mt-4 text-center text-[11px] sm:text-sm text-white px-3 py-2 rounded-full transition-opacity duration-300 opacity-0 shadow-md"></div>
+  </div>
+  <script>
+    if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(console.warn);
+      });
+    }
+  </script>
 </body>
 </html>

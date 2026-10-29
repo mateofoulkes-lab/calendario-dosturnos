@@ -1,19 +1,16 @@
 # TresTurn
 
-Calendario web instalable (PWA) de tres turnos, alojado junto a DosTurn en la carpeta \`tresturn/\`. No altera la aplicación original.
+Versión de **DosTurn** con exactamente la misma estructura visual y controles, pero para tres equipos.
 
-## Reglas
-- Equipo A: mañana, B: tarde y C: noche en la semana del **lunes 26 de octubre de 2026** (semana de referencia).
-- Rotación **semanal**, cada lunes: de manera predeterminada mañana → tarde → noche → mañana. Es configurable la dirección inversa.
-- **Mañana:** lunes a sábado, 06:00–14:00.
-- **Tarde:** lunes a viernes, 14:00–22:00.
-- **Noche:** comienza lunes a viernes a las 22:00 y termina al día siguiente a las 06:00 (última salida: sábado 06:00).
-- Los domingos son francos para todos.
-- El calendario atribuye cada noche a su fecha de inicio. En el detalle de cada día se muestra además la salida nocturna de la jornada anterior; en los sábados también aparece en la cuadrícula.
+- Elegí **Turno A, B o C** desde el desplegable superior: se recuerda en este dispositivo.
+- El calendario muestra solo el horario del equipo seleccionado.
+- **Mañana** (celeste): lunes a sábado, 06:00–14:00.
+- **Tarde** (naranja): lunes a viernes, 14:00–22:00.
+- **Noche** (azul oscuro): lunes a viernes, 22:00–06:00. La noche se pinta en el día **de ingreso a las 22:00**, sin marcar la salida en el día siguiente.
+- Semanas desde el **lunes 26/10/2026**: A mañana, B tarde, C noche. Rotación semanal estándar mañana→tarde→noche.
+- Las opciones originales de feriados se mantienen. Desde el engranaje se puede invertir el sentido de rotación si correspondiera.
+- Instalable como PWA, con archivos propios y modo sin conexión.
 
-## Uso
-Abrir \`https://mateofoulkes-lab.github.io/calendario-dosturnos/tresturn/\` si GitHub Pages publica el repositorio desde la raíz de \`main\`. En Android, utilizar «Instalar» o «Agregar a pantalla principal» desde el navegador. En iOS, usar Safari → Compartir → Añadir a pantalla de inicio.
+GitHub Pages (si publica desde main / raíz): https://mateofoulkes-lab.github.io/calendario-dosturnos/tresturn/
 
-El calendario no requiere servidores, APIs, ni dependencias externas. La rotación y el equipo resaltado se almacenan en \`localStorage\` de cada teléfono. Los archivos se guardan en caché para poder abrir la app sin conexión tras una primera visita conectada.
-
-**Aclaración:** la fecha de inicio y el sentido de giro son configurables para ajustarse al cronograma real. No hay feriados ni excepciones de planta cargadas de manera automática.
+No modifica el calendario original de DosTurn.
