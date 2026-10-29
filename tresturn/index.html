@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101b32">
+  <meta name="description" content="Calendario rotativo de tres turnos: mañana, tarde y noche. Equipos A, B y C.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TresTurn">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>TresTurn · Calendario de turnos</title>
+  <script defer src="./core.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="TresTurn, inicio">
+        <span class="brand-symbol"><i></i><i></i><i></i></span>
+        <span>Tres<span class="brand-light">Turn</span></span>
+      </a>
+      <div class="top-actions">
+        <a class="sibling-link" href="../">DosTurn <span aria-hidden="true">↗</span></a>
+        <button class="install-button" id="installBtn" type="button" title="Instalar como aplicación">＋ Instalar</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <span class="eyebrow"><span class="live-dot"></span> Calendario rotativo · A / B / C</span>
+          <h1>Los tres turnos,<br><em>en un solo lugar.</em></h1>
+          <p>Consultá qué equipo trabaja de mañana, tarde o noche. También funciona sin conexión.</p>
+        </div>
+        <div class="hero-mark" aria-hidden="true"><span>A</span><span>B</span><span>C</span></div>
+      </section>
+
+      <section class="section-block" aria-labelledby="weekTitle">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">ROTACIÓN ACTUAL</span>
+            <h2 id="weekTitle">Esta semana</h2>
+            <p id="weekRange" class="muted"></p>
+          </div>
+          <button type="button" id="todayTop" class="today-button">Ir a hoy</button>
+        </div>
+        <div class="shift-overview" id="shiftOverview" aria-live="polite"></div>
+      </section>
+
+      <section class="section-block calendar-section" aria-labelledby="calendarTitle">
+        <div class="calendar-toolbar">
+          <div>
+            <span class="section-kicker">PLANIFICÁ TUS DÍAS</span>
+            <h2 id="calendarTitle">Calendario</h2>
+          </div>
+          <div class="calendar-actions">
+            <label class="filter-group" for="teamFilter"><span>Resaltar</span>
+              <select id="teamFilter">
+                <option value="all">Todos</option>
+                <option value="A">Equipo A</option>
+                <option value="B">Equipo B</option>
+                <option value="C">Equipo C</option>
+              </select>
+            </label>
+            <button type="button" id="prevMonth" class="round-button" aria-label="Mes anterior">‹</button>
+            <button type="button" id="nextMonth" class="round-button" aria-label="Mes siguiente">›</button>
+          </div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="month-row">
+            <h3 id="monthTitle" aria-live="polite"></h3>
+            <button class="text-button" id="todayMonth" type="button">Hoy</button>
+          </div>
+          <div class="week-head" aria-hidden="true">
+            <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid" aria-label="Días y turnos del mes"></div>
+          <div class="legend" aria-label="Referencias">
+            <span><i class="legend-dot morning"></i>Mañana · 06–14</span>
+            <span><i class="legend-dot afternoon"></i>Tarde · 14–22</span>
+            <span><i class="legend-dot night"></i>Noche · 22–06</span>
+            <span><i class="legend-dot endnight"></i>Salida de noche</span>
+          </div>
+        </div>
+      </section>
+
+      <details class="settings" id="settingsPanel">
+        <summary><span class="settings-icon" aria-hidden="true">⚙</span><span><strong>Configuración de la rotación</strong><small>Semana de referencia y sentido del cambio</small></span><span class="chevron">⌄</span></summary>
+        <div class="settings-body">
+          <p>En la semana de referencia, el equipo <strong>A está de mañana</strong>, el <strong>B de tarde</strong> y el <strong>C de noche</strong>. La rotación cambia cada lunes.</p>
+          <div class="settings-fields">
+            <label>Semana de referencia
+              <input id="anchorDate" type="date" value="2026-10-26">
+            </label>
+            <label>Rotación semanal
+              <select id="rotationDirection">
+                <option value="1">Mañana → Tarde → Noche</option>
+                <option value="-1">Mañana → Noche → Tarde</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint">Elegí cualquier fecha de la semana que conocés. Los cambios se guardan solamente en este dispositivo.</p>
+          <button id="resetSettings" type="button" class="reset-button">Restaurar configuración inicial</button>
+        </div>
+      </details>
+      <footer>Hecho para consultas rápidas · Turnos de inicio de lunes a viernes, y mañana también los sábados.</footer>
+    </main>
+  </div>
+  <dialog id="dayDialog" aria-labelledby="dialogDate">
+    <div class="dialog-header"><div><span class="section-kicker">DETALLE DEL DÍA</span><h2 id="dialogDate"></h2></div><button class="dialog-close" id="closeDialog" aria-label="Cerrar" type="button">×</button></div>
+    <div id="dialogBody"></div>
+    <button class="dialog-bottom" type="button" id="closeDialogBottom">Cerrar</button>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
