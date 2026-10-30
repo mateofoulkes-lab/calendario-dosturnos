@@ -1,9 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="108" fill="#101b32"/>
-  <rect x="78" y="116" width="104" height="270" rx="25" fill="#74c5ff"/>
-  <rect x="204" y="151" width="104" height="235" rx="25" fill="#ffbf72"/>
-  <rect x="330" y="183" width="104" height="203" rx="25" fill="#b8a4ff"/>
-  <g font-family="Arial,sans-serif" font-weight="800" font-size="84" text-anchor="middle" fill="#14253b">
-    <text x="130" y="280">A</text><text x="256" y="280">B</text><text x="382" y="280">C</text>
+  <defs>
+    <linearGradient id="A" x2="0.8" y2="1"><stop stop-color="#22dcf5"/><stop offset="1" stop-color="#0077f2"/></linearGradient>
+    <linearGradient id="B" x2="0.1" y2="1"><stop stop-color="#ffda37"/><stop offset="1" stop-color="#ff4a20"/></linearGradient>
+    <linearGradient id="C" x2="0.4" y2="1"><stop stop-color="#bb77ff"/><stop offset="1" stop-color="#5125f0"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="55" fill="#082041"/>
+  <path d="M180 72 Q260 7 355 70" fill="none" stroke="#eaf3ff" stroke-width="28" stroke-linecap="round"/>
+  <path d="M347 43 L383 83 324 89Z" fill="#eaf3ff"/>
+  <rect x="48" y="130" width="157" height="257" rx="32" fill="url(#A)" transform="rotate(-8 126 258)"/>
+  <rect x="302" y="161" width="161" height="256" rx="32" fill="url(#C)" transform="rotate(-7 382 289)"/>
+  <rect x="178" y="146" width="163" height="258" rx="32" fill="url(#B)" transform="rotate(-7 260 275)"/>
+  <g font-family="Arial,Helvetica,sans-serif" fill="#fff" font-size="122" font-weight="900" text-anchor="middle">
+    <text x="122" y="307" transform="rotate(-8 122 307)">A</text>
+    <text x="258" y="314" transform="rotate(-7 258 314)">B</text>
+    <text x="386" y="329" transform="rotate(-7 386 329)">C</text>
   </g>
+  <path d="M320 444 Q234 502 135 448" fill="none" stroke="#eaf3ff" stroke-width="28" stroke-linecap="round"/>
+  <path d="M154 413 L113 446 164 476Z" fill="#eaf3ff"/>
 </svg>

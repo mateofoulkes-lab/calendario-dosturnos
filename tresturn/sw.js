@@ -1,6 +1,6 @@
 // Service worker exclusivo de TresTurn. No toca la caché de DosTurn.
-const CACHE = "tresturn-original-style-v3";
-const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/icon-192.png", "./icons/icon-512.png"];
+const CACHE = "tresturn-abc-icon-v4";
+const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 const TAILWIND_CDN = "https://cdn.tailwindcss.com";
 self.addEventListener("install", event => {
   event.waitUntil((async () => {
