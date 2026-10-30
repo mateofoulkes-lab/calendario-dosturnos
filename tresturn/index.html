@@ -57,56 +57,309 @@
         { date: "2025-08-15", label: "Día no laborable con fines turísticos", type: "turistico" },
         { date: "2025-11-21", label: "Día no laborable con fines turísticos", type: "turistico" },
       ];
-const SPECIAL_2026 = [
-  // ——— INAMOVIBLES
-  { date: "2026-01-01", label: "Año Nuevo", type: "inamovible" },
-  { date: "2026-02-16", label: "Carnaval", type: "inamovible" },
-  { date: "2026-02-17", label: "Carnaval", type: "inamovible" },
-  { date: "2026-03-24", label: "Día Nacional de la Memoria por la Verdad y la Justicia", type: "inamovible" },
-  { date: "2026-04-02", label: "Día del Veterano y de los Caídos en la Guerra de Malvinas", type: "inamovible" },
-  { date: "2026-04-03", label: "Viernes Santo (Festividad cristiana)", type: "inamovible" },
-  { date: "2026-05-01", label: "Día del Trabajador", type: "inamovible" },
-  { date: "2026-05-25", label: "Día de la Revolución de Mayo", type: "inamovible" },
-  { date: "2026-06-20", label: "Paso a la Inmortalidad del Gral. Manuel Belgrano", type: "inamovible" },
-  { date: "2026-07-09", label: "Día de la Independencia", type: "inamovible" },
-  { date: "2026-12-08", label: "Inmaculada Concepción de María", type: "inamovible" },
-  { date: "2026-12-25", label: "Navidad", type: "inamovible" },
-
-  // ——— TRASLADABLES
-  { date: "2026-06-15", label: "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6 → 15/6)", type: "trasladable" },
-  { date: "2026-08-17", label: "Paso a la Inmortalidad del Gral. José de San Martín", type: "trasladable" },
-  { date: "2026-10-12", label: "Día del Respeto a la Diversidad Cultural", type: "trasladable" },
-  { date: "2026-11-23", label: "Día de la Soberanía Nacional (20/11 → 23/11)", type: "trasladable" },
-
-  // ——— NO LABORABLES (religiosas/comunitarias)
-  { date: "2026-04-02", label: "Pascua Judía – 1° día (b)", type: "no-laborable" },
-  { date: "2026-04-03", label: "Pascua Judía – 2° día (b)", type: "no-laborable" },
-  { date: "2026-04-08", label: "Pascua Judía – 7° día (b)", type: "no-laborable" },
-  { date: "2026-04-09", label: "Pascua Judía – 8° día (b)", type: "no-laborable" },
-  { date: "2026-05-22", label: "Shavuot – 1° día (b)", type: "no-laborable" },
-  { date: "2026-05-23", label: "Shavuot – 2° día (b)", type: "no-laborable" },
-  { date: "2026-09-12", label: "Año Nuevo Judío – 1° día (b)", type: "no-laborable" },
-  { date: "2026-09-13", label: "Año Nuevo Judío – 2° día (b)", type: "no-laborable" },
-  { date: "2026-09-02", label: "Día del Perdón (b)", type: "no-laborable" },
-  { date: "2026-09-26", label: "Sucot – 1° día (b)", type: "no-laborable" },
-  { date: "2026-09-27", label: "Sucot – 2° día (b)", type: "no-laborable" },
-  { date: "2026-10-02", label: "Simjat Torá – 1° día (b)", type: "no-laborable" },
-  { date: "2026-10-03", label: "Simjat Torá – 2° día (b)", type: "no-laborable" },
-  { date: "2026-10-04", label: "Simjat Torá – 3° día (b)", type: "no-laborable" },
-  { date: "2026-05-27", label: "Fiesta del Sacrificio (c)", type: "no-laborable" },
-  { date: "2026-06-17", label: "Año Nuevo Islámico (c)", type: "no-laborable" },
-
-  // ——— TURÍSTICOS (puentes)
-  { date: "2026-03-23", label: "Día no laborable con fines turísticos", type: "turistico" },
-  { date: "2026-07-10", label: "Día no laborable con fines turísticos", type: "turistico" },
-  { date: "2026-12-07", label: "Día no laborable con fines turísticos", type: "turistico" },
+      // Feriados actualizados al 30/10/2026, fuentes y pendientes: README.md.
+      // Los feriados NO modifican automáticamente la rotación laboral.
+      const SPECIAL_2026 = [
+  {
+    "date": "2026-01-01",
+    "type": "inamovible",
+    "label": "Año Nuevo"
+  },
+  {
+    "date": "2026-02-16",
+    "type": "inamovible",
+    "label": "Lunes de Carnaval"
+  },
+  {
+    "date": "2026-02-17",
+    "type": "inamovible",
+    "label": "Martes de Carnaval"
+  },
+  {
+    "date": "2026-03-20",
+    "type": "no-laborable",
+    "label": "Id al-Fitr: fin de Ramadán (comunidad islámica; fecha lunar aproximada)"
+  },
+  {
+    "date": "2026-03-23",
+    "type": "turistico",
+    "label": "Día no laborable con fines turísticos"
+  },
+  {
+    "date": "2026-03-24",
+    "type": "inamovible",
+    "label": "Día Nacional de la Memoria por la Verdad y la Justicia"
+  },
+  {
+    "date": "2026-04-02",
+    "type": "inamovible",
+    "label": "Día del Veterano y de los Caídos en la Guerra de Malvinas"
+  },
+  {
+    "date": "2026-04-02",
+    "type": "no-laborable",
+    "label": "Jueves Santo"
+  },
+  {
+    "date": "2026-04-02",
+    "type": "no-laborable",
+    "label": "Pesaj, primer día (comunidad judía)"
+  },
+  {
+    "date": "2026-04-03",
+    "type": "inamovible",
+    "label": "Viernes Santo"
+  },
+  {
+    "date": "2026-04-03",
+    "type": "no-laborable",
+    "label": "Pesaj, segundo día (comunidad judía)"
+  },
+  {
+    "date": "2026-04-08",
+    "type": "no-laborable",
+    "label": "Pesaj, séptimo día (comunidad judía)"
+  },
+  {
+    "date": "2026-04-09",
+    "type": "no-laborable",
+    "label": "Pesaj, octavo día (comunidad judía)"
+  },
+  {
+    "date": "2026-04-24",
+    "type": "no-laborable",
+    "label": "Día de acción por la tolerancia y el respeto entre los pueblos (Ley 26.199, alcance específico)"
+  },
+  {
+    "date": "2026-05-01",
+    "type": "inamovible",
+    "label": "Día del Trabajo"
+  },
+  {
+    "date": "2026-05-25",
+    "type": "inamovible",
+    "label": "Día de la Revolución de Mayo"
+  },
+  {
+    "date": "2026-05-27",
+    "type": "no-laborable",
+    "label": "Id al-Adha: Fiesta del Sacrificio (comunidad islámica; fecha lunar aproximada)"
+  },
+  {
+    "date": "2026-06-15",
+    "type": "trasladable",
+    "label": "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6)"
+  },
+  {
+    "date": "2026-06-17",
+    "type": "no-laborable",
+    "label": "Año Nuevo Islámico (comunidad islámica; fecha lunar aproximada)"
+  },
+  {
+    "date": "2026-06-20",
+    "type": "inamovible",
+    "label": "Paso a la Inmortalidad del Gral. Manuel Belgrano"
+  },
+  {
+    "date": "2026-07-09",
+    "type": "inamovible",
+    "label": "Día de la Independencia"
+  },
+  {
+    "date": "2026-07-10",
+    "type": "turistico",
+    "label": "Día no laborable con fines turísticos"
+  },
+  {
+    "date": "2026-08-17",
+    "type": "trasladable",
+    "label": "Paso a la Inmortalidad del Gral. José de San Martín"
+  },
+  {
+    "date": "2026-09-12",
+    "type": "no-laborable",
+    "label": "Rosh Hashaná, primer día (comunidad judía)"
+  },
+  {
+    "date": "2026-09-13",
+    "type": "no-laborable",
+    "label": "Rosh Hashaná, segundo día (comunidad judía)"
+  },
+  {
+    "date": "2026-09-21",
+    "type": "no-laborable",
+    "label": "Iom Kipur: Día del Perdón (comunidad judía)"
+  },
+  {
+    "date": "2026-10-12",
+    "type": "trasladable",
+    "label": "Día del Respeto a la Diversidad Cultural"
+  },
+  {
+    "date": "2026-11-09",
+    "type": "inamovible",
+    "label": "Visita del papa León XIV (feriado nacional extraordinario, DNU 1103/2026)"
+  },
+  {
+    "date": "2026-11-10",
+    "type": "regional",
+    "label": "Visita del papa León XIV: feriado solamente en Córdoba y CABA"
+  },
+  {
+    "date": "2026-11-11",
+    "type": "regional",
+    "label": "Visita del papa León XIV: feriado solamente en la Provincia de Buenos Aires"
+  },
+  {
+    "date": "2026-11-23",
+    "type": "trasladable",
+    "label": "Día de la Soberanía Nacional (20/11)"
+  },
+  {
+    "date": "2026-12-07",
+    "type": "turistico",
+    "label": "Día no laborable con fines turísticos"
+  },
+  {
+    "date": "2026-12-08",
+    "type": "inamovible",
+    "label": "Inmaculada Concepción de María"
+  },
+  {
+    "date": "2026-12-25",
+    "type": "inamovible",
+    "label": "Navidad"
+  }
 ];
-
-      const SPECIAL_DAYS = {
-        2025: SPECIAL_2025,
-        2026: SPECIAL_2026,
-        2027: SPECIAL_2026.map(({ date, label, type }) => ({ date: date.replace("2025", "2026"), label, type })),
-      };
+      const SPECIAL_2027 = [
+  {
+    "date": "2027-01-01",
+    "type": "inamovible",
+    "label": "Año Nuevo"
+  },
+  {
+    "date": "2027-02-08",
+    "type": "inamovible",
+    "label": "Lunes de Carnaval"
+  },
+  {
+    "date": "2027-02-09",
+    "type": "inamovible",
+    "label": "Martes de Carnaval"
+  },
+  {
+    "date": "2027-03-24",
+    "type": "inamovible",
+    "label": "Día Nacional de la Memoria por la Verdad y la Justicia"
+  },
+  {
+    "date": "2027-03-25",
+    "type": "no-laborable",
+    "label": "Jueves Santo"
+  },
+  {
+    "date": "2027-03-26",
+    "type": "inamovible",
+    "label": "Viernes Santo"
+  },
+  {
+    "date": "2027-04-02",
+    "type": "inamovible",
+    "label": "Día del Veterano y de los Caídos en la Guerra de Malvinas"
+  },
+  {
+    "date": "2027-04-22",
+    "type": "no-laborable",
+    "label": "Pesaj, primer día (comunidad judía)"
+  },
+  {
+    "date": "2027-04-23",
+    "type": "no-laborable",
+    "label": "Pesaj, segundo día (comunidad judía)"
+  },
+  {
+    "date": "2027-04-24",
+    "type": "no-laborable",
+    "label": "Día de acción por la tolerancia y el respeto entre los pueblos (Ley 26.199, alcance específico)"
+  },
+  {
+    "date": "2027-04-28",
+    "type": "no-laborable",
+    "label": "Pesaj, séptimo día (comunidad judía)"
+  },
+  {
+    "date": "2027-04-29",
+    "type": "no-laborable",
+    "label": "Pesaj, octavo día (comunidad judía)"
+  },
+  {
+    "date": "2027-05-01",
+    "type": "inamovible",
+    "label": "Día del Trabajo"
+  },
+  {
+    "date": "2027-05-25",
+    "type": "inamovible",
+    "label": "Día de la Revolución de Mayo"
+  },
+  {
+    "date": "2027-06-20",
+    "type": "inamovible",
+    "label": "Paso a la Inmortalidad del Gral. Manuel Belgrano"
+  },
+  {
+    "date": "2027-06-21",
+    "type": "trasladable",
+    "label": "Paso a la Inmortalidad del Gral. Martín Miguel de Güemes (17/6)"
+  },
+  {
+    "date": "2027-07-09",
+    "type": "inamovible",
+    "label": "Día de la Independencia"
+  },
+  {
+    "date": "2027-08-16",
+    "type": "trasladable",
+    "label": "Paso a la Inmortalidad del Gral. José de San Martín (17/8)"
+  },
+  {
+    "date": "2027-10-02",
+    "type": "no-laborable",
+    "label": "Rosh Hashaná, primer día (comunidad judía)"
+  },
+  {
+    "date": "2027-10-03",
+    "type": "no-laborable",
+    "label": "Rosh Hashaná, segundo día (comunidad judía)"
+  },
+  {
+    "date": "2027-10-11",
+    "type": "trasladable",
+    "label": "Día del Respeto a la Diversidad Cultural (12/10)"
+  },
+  {
+    "date": "2027-10-11",
+    "type": "no-laborable",
+    "label": "Iom Kipur: Día del Perdón (comunidad judía)"
+  },
+  {
+    "date": "2027-11-20",
+    "type": "trasladable",
+    "label": "Día de la Soberanía Nacional (fecha original; posible traslado pendiente)",
+    "pending": true
+  },
+  {
+    "date": "2027-12-08",
+    "type": "inamovible",
+    "label": "Inmaculada Concepción de María"
+  },
+  {
+    "date": "2027-12-25",
+    "type": "inamovible",
+    "label": "Navidad"
+  }
+];
+      const SPECIAL_DAYS = {2025: SPECIAL_2025, 2026: SPECIAL_2026, 2027: SPECIAL_2027};
 
       // Estilos de círculo por categoría (relleno + borde del mismo color)
       const SPECIAL_STYLES = {
@@ -114,6 +367,7 @@ const SPECIAL_2026 = [
         trasladable:  { bg: "bg-emerald-500", border: "border-emerald-500", text: "text-white"    },
         "no-laborable": { bg: "bg-gray-400",    border: "border-gray-400",    text: "text-gray-900" },
         turistico:    { bg: "bg-purple-600",  border: "border-purple-600",  text: "text-white"    },
+        regional: { bg: "bg-rose-600", border: "border-rose-600", text: "text-white" },
       };
 
       // =====================================================
@@ -148,6 +402,7 @@ const SPECIAL_2026 = [
         showTrasladable: true,
         showNoLaborable: true,
         showTuristico: true,
+        showRegional: true,
       };
       let SETTINGS = loadSettings();
 
@@ -175,12 +430,14 @@ const SPECIAL_2026 = [
         document.getElementById("opt-trasladable").checked = SETTINGS.showTrasladable;
         document.getElementById("opt-nolaborable").checked = SETTINGS.showNoLaborable;
         document.getElementById("opt-turistico").checked = SETTINGS.showTuristico;
+        document.getElementById("opt-regional").checked = SETTINGS.showRegional;
 
         // leyenda (atenúa cuando está oculto)
         document.querySelector('[data-legend="inamovible"]').classList.toggle("opacity-40", !SETTINGS.showInamovible);
         document.querySelector('[data-legend="trasladable"]').classList.toggle("opacity-40", !SETTINGS.showTrasladable);
         document.querySelector('[data-legend="no-laborable"]').classList.toggle("opacity-40", !SETTINGS.showNoLaborable);
         document.querySelector('[data-legend="turistico"]').classList.toggle("opacity-40", !SETTINGS.showTuristico);
+        document.querySelector('[data-legend="regional"]').classList.toggle("opacity-40", !SETTINGS.showRegional);
       }
 
       function isCategoryEnabled(type) {
@@ -189,6 +446,7 @@ const SPECIAL_2026 = [
           case "trasladable":  return SETTINGS.showTrasladable;
           case "no-laborable": return SETTINGS.showNoLaborable;
           case "turistico":    return SETTINGS.showTuristico;
+          case "regional":     return SETTINGS.showRegional;
           default: return true;
         }
       }
@@ -231,8 +489,10 @@ const SPECIAL_2026 = [
       function getSpecialForYear(year) { return SPECIAL_DAYS[year] || []; }
       function specialInfo(date) {
         const iso = dateToISO(date);
-        const arr = getSpecialForYear(date.getFullYear());
-        return arr.find(x => x.date === iso) || null;
+        const priority = {inamovible: 0, regional: 1, trasladable: 2, turistico: 3, "no-laborable": 4};
+        return getSpecialForYear(date.getFullYear())
+          .filter(x => x.date === iso && isCategoryEnabled(x.type))
+          .sort((a,b) => priority[a.type] - priority[b.type]);
       }
 
       // =====================================================
@@ -275,6 +535,9 @@ const SPECIAL_2026 = [
         label.textContent = new Date(year, month).toLocaleString("es-ES", { month: "long", year: "numeric" });
         body.innerHTML = "";
         renderMonthPicker(month, year);
+        document.getElementById("feriados-nota").textContent = year === 2027
+          ? "2027: días turísticos por confirmar; traslado del 20/11 aún no definido (? en el calendario)."
+          : "Los feriados no modifican automáticamente los turnos asignados.";
 
         const weeks = getWeeksInMonth(year, month);
         weeks.forEach(week => {
@@ -319,19 +582,22 @@ const SPECIAL_2026 = [
             }
 
             // Feriados/no laborables → círculo relleno + borde propio + tooltip (según filtros)
-            const special = specialInfo(day);
-            if (inMonth && special && isCategoryEnabled(special.type)) {
+            const specials = specialInfo(day);
+            const special = specials[0] || null;
+            if (inMonth && special) {
               const style = SPECIAL_STYLES[special.type] || SPECIAL_STYLES.inamovible;
               number.classList.remove("text-white"); // Un feriado usa el color de texto de su propio círculo.
               number.classList.add(style.bg, style.border, style.text, "border-2");
-              if (cell.title) cell.title += ` · ${special.label}`;
-              else cell.title = special.label;
+              const labels = specials.map(x => x.label + (x.pending ? " (PENDIENTE)" : "")).join(" · ");
+              if (cell.title) cell.title += " · " + labels;
+              else cell.title = labels;
+              if (specials.some(x => x.pending)) number.textContent = day.getDate() + "?";
             }
 
             // “Hoy” → borde del turno; si además es especial, mantiene el relleno y cambia el borde al del turno
             if (isToday) {
               const turnoHoy = effectiveShiftForDate(day);
-              if (special && isCategoryEnabled(special.type)) {
+              if (special) {
                 const st = SPECIAL_STYLES[special.type] || {};
                 if (st.border) number.classList.remove(st.border);
               }
@@ -351,7 +617,7 @@ const SPECIAL_2026 = [
 
       function showFlash(date) {
         const turno = effectiveShiftForDate(date);
-        const special = specialInfo(date);
+        const specials = specialInfo(date);
         const box = document.getElementById("message");
         let extra = "";
 
@@ -363,7 +629,7 @@ const SPECIAL_2026 = [
         else esFranco = (i === 5 || i === 6);
 
         if (esFranco) extra = " · Día franco";
-        if (special && isCategoryEnabled(special.type)) extra += (extra ? " · " : " · ") + special.label;
+        if (specials.length) extra += " · " + specials.map(x => x.label + (x.pending ? " (PENDIENTE)" : "")).join(" · ");
 
         box.textContent = `${date.toLocaleDateString("es-AR")} · Turno ${turno}${extra}`;
         box.classList.remove("opacity-0", COLORS.flashA, COLORS.flashB, COLORS.flashC);
@@ -439,6 +705,9 @@ const SPECIAL_2026 = [
       document.getElementById("opt-turistico").addEventListener("change", (e) => {
         SETTINGS.showTuristico = e.target.checked; onChangeSaveRerender();
       });
+      document.getElementById("opt-regional").addEventListener("change", (e) => {
+        SETTINGS.showRegional = e.target.checked; onChangeSaveRerender();
+      });
 
       // Init
       renderCalendar(currentMonth, currentYear);
@@ -496,7 +765,11 @@ const SPECIAL_2026 = [
           </label>
           <label class="flex items-center gap-2 py-1">
             <input id="opt-turistico" type="checkbox" class="accent-purple-600" checked>
-            <span>Mostrar feriados turísticos</span>
+            <span>Mostrar días turísticos no laborables</span>
+          </label>
+          <label class="flex items-center gap-2 py-1">
+            <input id="opt-regional" type="checkbox" class="accent-rose-600" checked>
+            <span>Mostrar feriados regionales</span>
           </label>
         </div>
       </div>
@@ -518,6 +791,9 @@ const SPECIAL_2026 = [
     <span data-legend="turistico" class="inline-flex items-center gap-1">
       <span class="inline-block w-3 h-3 rounded-full bg-purple-600"></span> Turísticos
     </span>
+    <span data-legend="regional" class="inline-flex items-center gap-1">
+      <span class="inline-block w-3 h-3 rounded-full bg-rose-600"></span> Regionales
+    </span>
   </div>
 
   <!-- Referencias turno mañana/tarde alineadas a la derecha -->
@@ -532,6 +808,7 @@ const SPECIAL_2026 = [
     <!-- Título mes -->
     <h2 id="month-label" class="text-center text-xl sm:text-2xl font-bold mb-2 sm:mb-4 capitalize"></h2>
 
+    <p id="feriados-nota" class="text-[11px] sm:text-xs text-gray-700 mb-2" aria-live="polite"></p>
     <!-- Tabla -->
     <div class="overflow-x-auto rounded-lg border border-white/50">
       <table class="w-full border-collapse text-gray-800">
