@@ -527,6 +527,70 @@
           if (i === month) opt.selected = true;
           select.appendChild(opt);
         }
+
+        // La versión anterior permitía cambiar solo el mes y ocultaba el año.
+        // Un selector explícito permite ir directamente a los feriados de 2027.
+        const yearSelect = document.getElementById("year-select");
+        yearSelect.innerHTML = "";
+        const firstYear = Math.min(2025, year - 1);
+        const lastYear = Math.max(2028, year + 1);
+        for (let y = firstYear; y <= lastYear; y++) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          if (y === year) opt.selected = true;
+          yearSelect.appendChild(opt);
+        }
+      }
+
+      function renderHolidayList(month, year) {
+        const title = document.getElementById("holidays-title");
+        const list = document.getElementById("holidays-list");
+        const monthName = new Date(year, month, 1).toLocaleDateString("es-AR", {month:"long"});
+        title.textContent = "Feriados de " + monthName + " " + year;
+        list.replaceChildren();
+
+        const holidays = getSpecialForYear(year)
+          .filter(item => Number(item.date.slice(5, 7)) === month + 1 && isCategoryEnabled(item.type))
+          .sort((a,b) => a.date.localeCompare(b.date));
+        if (!holidays.length) {
+          const empty = document.createElement("p");
+          empty.className = "text-sm text-gray-600 px-3 py-3";
+          empty.textContent = !SPECIAL_DAYS[year]
+            ? "Aún no hay un calendario de feriados cargado para " + year + "."
+            : "No hay feriados ni días no laborables cargados para este mes con los filtros actuales.";
+          list.appendChild(empty);
+          return;
+        }
+
+        // Si varias conmemoraciones coinciden, se muestran todas, no solo la primera.
+        const group = new Map();
+        for (const item of holidays) {
+          if (!group.has(item.date)) group.set(item.date, []);
+          group.get(item.date).push(item);
+        }
+        for (const [iso, items] of group) {
+          const row = document.createElement("div");
+          row.className = "flex gap-3 px-3 py-2.5 border-b border-white/60 last:border-0";
+          const date = document.createElement("span");
+          date.className = "font-bold shrink-0 w-10 text-sm text-gray-800 pt-0.5";
+          date.textContent = iso.slice(8,10) + "/" + iso.slice(5,7);
+          const details = document.createElement("div");
+          details.className = "flex-1 min-w-0";
+          for (const item of items) {
+            const label = document.createElement("div");
+            label.className = "text-xs sm:text-sm leading-relaxed text-gray-800 mb-1";
+            const dot = document.createElement("span");
+            const dotColor = {inamovible:"bg-indigo-700", trasladable:"bg-emerald-600", "no-laborable":"bg-gray-500", turistico:"bg-purple-600",regional:"bg-rose-600"}[item.type] || "bg-gray-500";
+            dot.className = "inline-block w-2 h-2 rounded-full mr-2 " + dotColor;
+            dot.setAttribute("aria-hidden", "true");
+            label.appendChild(dot);
+            label.appendChild(document.createTextNode(item.label + (item.pending ? " · TRASLADO PENDIENTE" : "")));
+            details.appendChild(label);
+          }
+          row.append(date, details);
+          list.appendChild(row);
+        }
       }
 
       function renderCalendar(month, year) {
@@ -611,8 +675,9 @@
           body.appendChild(row);
         });
 
-        // actualizar leyenda según settings
+        // actualizar leyenda y listado de feriados según filtros, mes y año.
         applySettingsToUI();
+        renderHolidayList(month, year);
       }
 
       function showFlash(date) {
@@ -654,6 +719,10 @@
       };
       document.getElementById("month-select").onchange = e => {
         currentMonth = parseInt(e.target.value, 10);
+        renderCalendar(currentMonth, currentYear);
+      };
+      document.getElementById("year-select").onchange = e => {
+        currentYear = parseInt(e.target.value, 10);
         renderCalendar(currentMonth, currentYear);
       };
       document.getElementById("go-today").onclick = () => {
@@ -725,7 +794,10 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <select id="month-select" class="px-3 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md"></select>
+        <label for="month-select" class="sr-only">Mes del calendario</label>
+        <select id="month-select" class="px-2 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md"></select>
+        <label for="year-select" class="sr-only">Año del calendario</label>
+        <select id="year-select" aria-label="Seleccionar año" class="px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md shadow-md bg-white font-semibold"></select>
         <label for="team-select" class="sr-only">Mi equipo</label>
         <select id="team-select" aria-label="Mi equipo" class="px-3 py-1.5 sm:px-4 sm:py-2 border rounded-md shadow-md bg-white">
           <option value="A">Turno A</option>
@@ -826,6 +898,15 @@
         <tbody id="calendar-body"></tbody>
       </table>
     </div>
+
+    <!-- Listado accesible, visible y filtrable de feriados del mes elegido. -->
+    <section id="holidays-panel" class="mt-3 sm:mt-4 rounded-xl border border-white/60 bg-white/65 overflow-hidden" aria-labelledby="holidays-title">
+      <div class="px-3 py-3 bg-white/50 border-b border-white/60">
+        <h3 id="holidays-title" class="font-bold text-gray-800 text-sm sm:text-base capitalize"></h3>
+        <p class="text-[11px] text-gray-600 mt-1">Feriados y días no laborables de Argentina · Un feriado no cambia automáticamente tu turno.</p>
+      </div>
+      <div id="holidays-list" aria-live="polite"></div>
+    </section>
 
     <!-- Mensaje emergente -->
     <div id="message" class="mt-3 sm:mt-4 text-center text-[11px] sm:text-sm text-white px-3 py-2 rounded-full transition-opacity duration-300 opacity-0 shadow-md"></div>

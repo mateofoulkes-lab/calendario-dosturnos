@@ -32,3 +32,8 @@ Fuentes:
 - https://www.argentina.gob.ar/normativa/nacional/norma-430580/texto
 - https://www.hebcal.com/holidays/pesach-2027
 - https://www.chabad.org/holidays/default_cdo/year/2027/jewish/holidays-2027.htm
+
+
+## Selector de año y feriados visibles (30/10/2026)
+
+El calendario ahora permite seleccionar directamente el año (por ejemplo, **2027**) además del mes. Abajo se muestra un listado visible por fecha de todos los feriados nacionales y días no laborables con los filtros activados, incluyendo conmemoraciones coincidentes y avisos sobre traslados pendientes. El cambio de año no modifica la rotación de turnos.

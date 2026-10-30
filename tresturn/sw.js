@@ -1,5 +1,5 @@
 // Service worker exclusivo de TresTurn. No toca la caché de DosTurn.
-const CACHE = "tresturn-feriados-2026-2027-v5";
+const CACHE = "tresturn-feriados-visible-2027-v6";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 const TAILWIND_CDN = "https://cdn.tailwindcss.com";
 self.addEventListener("install", event => {
