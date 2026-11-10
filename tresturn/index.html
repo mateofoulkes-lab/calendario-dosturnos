@@ -373,7 +373,7 @@
       // =====================================================
       // TURNOS
       // =====================================================
-      const ANCHOR_DATE = new Date(2026, 9, 26); // Semana A mañana, B tarde, C noche
+      const ANCHOR_DATE = new Date(2026, 10, 9); // Semana del 09/11/2026: A mañana, B tarde, C noche
 
       const COLORS = {
         cellA: "bg-blue-200",        // mañana
@@ -470,7 +470,7 @@
       const weeksBetween = (a,b) => Math.round((utcDay(a) - utcDay(b)) / 7);
 
       // El equipo seleccionado tiene un único turno por semana.
-      // Semana de referencia (26/10/2026): A mañana, B tarde, C noche.
+      // Semana de referencia (09/11/2026): A mañana, B tarde, C noche.
       // Por defecto: mañana → tarde → noche → mañana.
       function effectiveShiftForDate(d) {
         const shifts = ["mañana", "tarde", "noche"];

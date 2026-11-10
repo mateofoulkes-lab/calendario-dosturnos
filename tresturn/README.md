@@ -7,7 +7,7 @@ Versión de **DosTurn** con exactamente la misma estructura visual y controles, 
 - **Mañana** (celeste): lunes a sábado, 06:00–14:00.
 - **Tarde** (naranja): lunes a viernes, 14:00–22:00.
 - **Noche** (azul oscuro): lunes a viernes, 22:00–06:00. La noche se pinta en el día **de ingreso a las 22:00**, sin marcar la salida en el día siguiente.
-- Semanas desde el **lunes 26/10/2026**: A mañana, B tarde, C noche. Rotación semanal estándar mañana→tarde→noche.
+- Semana de referencia **lunes 09/11/2026**: A mañana, B tarde, C noche. Rotación semanal estándar mañana→tarde→noche.
 - Las opciones originales de feriados se mantienen. Desde el engranaje se puede invertir el sentido de rotación si correspondiera.
 - Instalable como PWA, con archivos propios y modo sin conexión.
 
